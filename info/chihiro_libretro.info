@@ -1,0 +1,44 @@
+# Software Information
+display_name = "Sega - Chihiro"
+authors = "xemu team|Chihiro fork contributors|danprice142|Custom input integration"
+supported_extensions = "bin"
+corename = "Chihiro"
+categories = "Emulator"
+license = "GPLv3+"
+permissions = ""
+display_version = "1.0.0 RC2"
+
+# Hardware Information
+manufacturer = "Sega"
+systemname = "Sega Chihiro"
+systemid = "chihiro"
+database = "Sega Chihiro"
+
+# Firmware / BIOS
+firmware_count = "6"
+firmware0_desc = "Chihiro: chihiro_xbox_bios.bin"
+firmware0_path = "chihiro/chihiro_xbox_bios.bin"
+firmware0_opt = "false"
+firmware1_desc = "Chihiro: fpr21042_m29w160et.bin"
+firmware1_path = "chihiro/fpr21042_m29w160et.bin"
+firmware1_opt = "false"
+firmware2_desc = "Chihiro: ic10_g24lc64.bin"
+firmware2_path = "chihiro/ic10_g24lc64.bin"
+firmware2_opt = "false"
+firmware3_desc = "Chihiro: ic11_24lc024.bin"
+firmware3_path = "chihiro/ic11_24lc024.bin"
+firmware3_opt = "false"
+firmware4_desc = "Chihiro: pc20_g24lc64.bin"
+firmware4_path = "chihiro/pc20_g24lc64.bin"
+firmware4_opt = "false"
+firmware5_desc = "OutRun 2 Special Tours: ver1305.bin"
+firmware5_path = "chihiro/ver1305.bin"
+firmware5_opt = "true"
+
+# Libretro Features
+supports_no_game = "false"
+savestate = "false"
+cheats = "false"
+needs_fullpath = "true"
+
+description = "Chihiro libretro core with game-specific gun/gamepad controls, Lichtknarre/vJoy support, persistent cards and optional guarded widescreen profiles for nine tested titles. One game per RetroArch process; menu/HUD quirks remain."

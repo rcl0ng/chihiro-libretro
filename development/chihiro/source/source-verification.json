@@ -1,0 +1,25 @@
+{
+  "base_commit": "0d44d803b2ad22c26c907844fe81d40fbd6ffdfa",
+  "combined_patch": "chihiro-libretro-v15.patch",
+  "git_apply_check": "passed",
+  "patch_applied": true,
+  "upstream_submodule_entries": [
+    "160000 90c488d5f4a407342247b9ea869df1c2d9c8e266 0\troms/QemuMacDrivers",
+    "160000 b7f755248e2dcc56c02634d288e1c0ff7e0ce1c7 0\troms/SLOF",
+    "160000 4dfdca63a93497203f197ec98ba20e2327e4afe4 0\troms/edk2",
+    "160000 4bd064de239dab2426b31c9789a1f4d78087dc63 0\troms/ipxe",
+    "160000 c3a19c1e54977a53027d6232050e1e3e39a98a1b 0\troms/openbios",
+    "160000 a32a91069119e7a5aa31e6bc51d5e00860be3d80 0\troms/opensbi",
+    "160000 8ca302e86d685fa05b16e2b208888243da319941 0\troms/qboot",
+    "160000 99d9b4dcf27d7fbcbadab71bdc88ef6531baf6bf 0\troms/qemu-palcode",
+    "160000 b52ca86e094d19b58e2304417787e96b940e39c6 0\troms/seabios",
+    "160000 a04b6f35c0b7437ce968f64106ee6ff5aadee419 0\troms/seabios-hppa",
+    "160000 785a5e3070a86e18521e62fe202b87209de30fa2 0\troms/skiboot",
+    "160000 840658b093976390e9537724f802281c9c8439f5 0\troms/u-boot",
+    "160000 1e5f4a1607cc6713d27ffe48dd9de84e69cfc1c2 0\troms/u-boot-sam460ex",
+    "160000 183c9ff8056b7946db1ae49cc23e8980ac413174 0\troms/vbootrom",
+    "160000 caed407a0f1dfe3a3293a41c378c382deefbac36 0\ttests/lcitool/libvirt-ci"
+  ],
+  "external_build_dependencies_included": false,
+  "clean_windows_rebuild": "not run"
+}

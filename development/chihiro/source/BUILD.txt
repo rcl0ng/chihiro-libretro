@@ -1,0 +1,115 @@
+Base: https://github.com/Tovarichtch/xemu
+Commit: 0d44d803b2ad22c26c907844fe81d40fbd6ffdfa (Playtest-v2)
+Imported libretro port: https://github.com/danprice142/xemu-libretro
+Commit: 15e4475357dae3875868a099cf6468457e97bfd6
+Apply the combined chihiro-libretro-v15.patch directly to the base. Do not
+apply both this combined patch and previous version/upstream patches.
+
+Toolchain: ghcr.io/xemu-project/xemu-win64-toolchain-gcc:sha-18018f1
+GCC 15.2, MXE /usr/local/mxe. Put its usr/bin and native bin dirs on PATH.
+Use LTO-aware gcc-ar/gcc-ranlib (or rebuild archive indexes with gcc-ranlib).
+The generic toolchain ar generated slim-only indexes here; gcc-ranlib fixed
+all regular build/*.a archives before final linking.
+
+In a fresh build directory:
+../configure --target-list=i386-softmmu --cross-prefix=x86_64-w64-mingw32.static- --static --disable-werror --extra-cflags='-DXBOX=1 -DCHIHIRO_V257_TRACE=1 -Wno-error' -Dlibretro=true -Dbuildtype=release -Doptimization=3 -Ddebug=false -Db_ndebug=false -Db_lto=true
+ninja -j8 xemu_libretro.dll
+Strip a COPY with x86_64-w64-mingw32.static-strip --strip-unneeded.
+Rename to chihiro_libretro.dll. Assertions must remain enabled.
+i386-softmmu is the Xbox guest; the host DLL is Windows x64.
+
+Tests: put these scripts beside the patched checkout named xemu-core.
+ASAN_OPTIONS=detect_leaks=0 python3 test-core-input.py
+ASAN_OPTIONS=detect_leaks=0 python3 test-card-persistence.py
+Input test uses native gcc and shim headers. Card test uses real native GLib
+headers/libraries (GLIB_TEST_PREFIX defaults /usr; can set a native MXE prefix).
+Neither test boots QEMU or validates Windows graphics/audio/gameplay.
+
+Set CMAKE=/usr/local/mxe/usr/x86_64-pc-linux-gnu/bin/cmake,
+AR=x86_64-w64-mingw32.static-gcc-ar and RANLIB=x86_64-w64-mingw32.static-gcc-ranlib before configuring.
+V9 tests also include test-v257-serial.py (real V257 model / serial replies).
+The CHIHIRO_V257_TRACE define enables bounded native diagnostics.
+
+V6 adds test-v257-uart-gate.py: run ASAN_OPTIONS=detect_leaks=0 python3 test-v257-uart-gate.py.
+It compiles the actual MIDI RX function with transport shims and checks queued-byte preservation.
+The input/card/serial logs retained from v5 cover code unchanged by v6 (guest tracing disabled in input test).
+
+V7 adds test-apu-shutdown.py: run ASAN_OPTIONS=detect_leaks=0 python3 test-apu-shutdown.py.
+It compiles the actual APU exit function with pthread shims and tests joining a worker needing BQL.
+Earlier test logs retained for code unchanged by this version.
+
+V8 adds test-voice-workers-shutdown.py. Run ASAN_OPTIONS=detect_leaks=0 python3 test-voice-workers-shutdown.py.
+It reproduces the missing-mutex-unlock deadlock and checks the actual corrected voice worker/init/finalize code with 2, 3 and 4 workers in both wake modes.
+
+V9 adds test-dll-shutdown.py. Run ASAN_OPTIONS=detect_leaks=0 python3 test-dll-shutdown.py.
+It checks actual exit handlers and RCU callback queue/worker/drain/shutdown with pthread shims; Windows loader-lock behavior is simulated.
+
+V10 adds test-outrun-widescreen.py. Put scripts beside checkout xemu-core.
+Place your OutRun 2 BIN at upload/Outrun 2.bin and run extract-outrun-xbe.py;
+then run ASAN_OPTIONS=detect_leaks=0 python3 test-outrun-widescreen.py.
+Tests use the actual patch module and sections extracted from your own XBE.
+No game executable is bundled.
+
+V11: test-dll-shutdown.py now runs test-rcu-shutdown.py, which uses the actual
+RCU registry and grace-period code as well as the queue/drain/shutdown, with
+native pthread/memory-order shims. It covers idle shutdown, a delayed active
+reader and both explicit drain and directly pending callbacks at shutdown.
+This does not reproduce the Windows OutRun exit hang; v11 adds diagnostic
+stages and registers/unregisters the emulation host thread with RCU.
+
+Widescreen tests for all three profiles:
+python3 extract-game-xbes.py 'upload/Outrun 2.bin' outrun-analysis/extracted
+python3 extract-game-xbes.py 'upload/Outrun 2 (Special Tours).bin' outrunsp-analysis/extracted
+python3 extract-game-xbes.py 'upload/Maximum Tune 1 (Export).bin' mt1-analysis/extracted
+python3 test-chihiro-widescreen.py
+These use your own game images. No game image or extracted XBE is included.
+
+V12: synchronized LIBRETRO RCU FIFO and atomic Windows TLS-key creation.
+Native tests use actual core code with host API shims, not a Windows runtime:
+python3 test-rcu-shutdown.py
+python3 test-windows-tls.py
+python3 test-dll-shutdown.py
+
+New executable extraction before the five-profile camera tests:
+python3 extract-game-xbes.py 'upload/Maximum Tune 2 (Export).bin' mt2-analysis/extracted
+python3 extract-game-xbes.py 'upload/Crazy Taxi High Roller.bin' ct3-analysis/extracted
+python3 test-chihiro-widescreen.py
+See WIDESCREEN-analysis.txt for revision hashes, addresses and projection math.
+
+V13: RCU initialization is deferred until retro_init, outside DLL constructors.
+Run python3 test-core-lifecycle.py for repeated metadata and initialized loads.
+V12 synchronized LIBRETRO RCU FIFO and atomic Windows TLS-key creation retained.
+Native tests use actual core code with host API shims, not a Windows runtime:
+python3 test-rcu-shutdown.py
+python3 test-windows-tls.py
+python3 test-dll-shutdown.py
+
+New executable extraction before the five-profile camera tests:
+python3 extract-game-xbes.py 'upload/Maximum Tune 2 (Export).bin' mt2-analysis/extracted
+python3 extract-game-xbes.py 'upload/Crazy Taxi High Roller.bin' ct3-analysis/extracted
+python3 extract-game-xbes.py 'upload/Ollie King.bin' ollie-analysis/extracted
+python3 test-chihiro-widescreen.py
+See WIDESCREEN-analysis.txt for revision hashes, addresses and projection math.
+
+V14 adds only the guarded VC3 widescreen profile and increments core version.
+V13 lifecycle source is unchanged and user passed startup/exit on v13.
+Additional test input extraction:
+python3 extract-game-xbes.py 'upload/vc3.bin' vc3-analysis/extracted
+pip install unicorn==2.1.4
+python3 test-vc3-gun-widescreen.py
+This executes the emitted i386 helpers in Unicorn, not a Windows gameplay run.
+Tests require GNU as/ld/objdump and user-supplied extracted XBE inputs.
+The bundled vc3-profile-v14.json describes patch addresses and bytes.
+
+V15 adds guarded HOTD3 and Ghost Squad profiles; earlier profiles unchanged.
+python3 extract-game-xbes.py 'upload/hotd3.bin' hotd3-analysis/extracted
+python3 extract-game-xbes.py 'upload/ghostsquad.bin' gs-analysis/extracted
+python3 test-gun-widescreen-v15.py
+V13 lifecycle source is unchanged and user passed startup/exit on v13.
+Additional test input extraction:
+python3 extract-game-xbes.py 'upload/vc3.bin' vc3-analysis/extracted
+pip install unicorn==2.1.4
+python3 test-vc3-gun-widescreen.py
+This executes the emitted i386 helpers in Unicorn, not a Windows gameplay run.
+Tests require GNU as/ld/objdump and user-supplied extracted XBE inputs.
+The bundled vc3-profile-v14.json describes patch addresses and bytes.

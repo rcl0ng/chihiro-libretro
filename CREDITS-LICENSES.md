@@ -1,0 +1,5 @@
+# Credits and component licenses
+
+Project integration and hardware testing: Ron / rclong. Development and packaging assisted by GPT. Emulator authors retain their copyrights and licenses. See the original LICENSE/COPYING files in each preserved source archive and `development/<core>`; no blanket license is applied to this collection. Upstream projects include FCEUmm, Snes9x, Genesis Plus GX, Mednafen/Beetle PSX/Beetle Saturn, FinalBurn Neo, QEMU/xemu, Tovarichtch's Chihiro fork and danprice142's libretro port as applicable. Lichtknarre and vJoy are external dependencies, not bundled installers. RetroBat reference configurations derive from supplied RetroBat files; retain RetroBat attribution and applicable terms. Converter code retains its MIT notice and Python/7-Zip dependency notices.
+
+Current publication gate: confirm complete corresponding source/build dependencies and licenses before public release; v1.0.0 preserves the supplied material and does not certify a clean rebuild. No game ROMs, BIOS, game BINs or personal saves are intentionally distributed.
